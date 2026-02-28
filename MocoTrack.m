@@ -1,4 +1,5 @@
 clc; clear; close all;
+orgDir  = pwd; 
 
 import org.opensim.modeling.*;
 
@@ -6,6 +7,7 @@ import org.opensim.modeling.*;
 track = MocoTrack();
 track.setName('muscle_driven_state_tracking');
 
+cd(getDataPath());
 % Construct a ModelProcessor and set it on the tool. The default
 % muscles in the model are replaced with optimization-friendly
 % DeGrooteFregly2016Muscles, and adjustments are made to the default muscle
@@ -23,7 +25,7 @@ track.setModel(modelProcessor);
 track.set_allow_unused_references(true);
 
 %% 
-tableStatesProcessor = TableProcessor('Data/ik_output_walk_rad.sto');
+tableStatesProcessor = TableProcessor(fullfile('Data','ik_output_walk_rad.sto'));
 tableStatesProcessor.append(TabOpLowPassFilter(6));
 track.setStatesReference(tableStatesProcessor);
 
@@ -225,7 +227,7 @@ solver.resetProblem(problem);
 solution = study.solve();%.unseal();
 solution = solution.unseal();
 %import org.opensim.modeling.*;
-solution.write('MTracking_Amp_STF_1_solution.sto');
+solution.write(fullfile('Results','MTracking_Amp_STF_1_solution.sto'));
 
 contact_r = StdVectorString();
 contact_l = StdVectorString();
@@ -244,12 +246,14 @@ contact_l.add('/forceset/contactOtherToes_l');
 contact_l.add('/forceset/contactHallux_l');
 externalForcesTableFlat = opensimMoco.createExternalLoadsTableForGait(model,solution,contact_r,contact_l);
 
-STOFileAdapter.write(externalForcesTableFlat,'MTracking_Amp_STF_1_GRF.sto');
+STOFileAdapter.write(externalForcesTableFlat,fullfile('Results','MTracking_Amp_STF_1_GRF.sto'));
 
 model = modelProcessor.process();
 report = osimMocoTrajectoryReport(model, ...
-        'MTracking_Amp_STF_1_solution.sto', 'bilateral', true);
+        fullfile('Results','MTracking_Amp_STF_1_solution.sto'), 'bilateral', true);
 % The report is saved to the working directory.
 reportFilepath = report.generate();
 %open(reportFilepath);
 % study.visualize(solution);
+
+cd(orgDir);
