@@ -1,0 +1,75 @@
+clc; clear; close all; 
+orgDir  = pwd; 
+
+addpath(fullfile('Functions','Motion'));
+cd(getDataPath());
+
+%% 
+ReferenceDir = fullfile('Data', 'ik_output_walk_rad.sto');
+ResultsDir = fullfile('Results', 'MTracking_Amp_STF_1_solution.sto');
+
+
+dataReference = read_motionFile(ReferenceDir);
+dataResults = importdata(ResultsDir); % read_motionFile does not work with MocoTrack results 
+% files, so we use this function instead
+
+labels2compare = dataReference.labels;
+labelsResults = dataResults.colheaders;
+time_ref = dataReference.data(:,1);
+time_rslt = dataResults.data(:,1);
+
+total2plot = numel(labels2compare) - 1;
+
+a = 3; 
+b = 4; 
+
+
+for i = 2:numel(labels2compare) % We start from 2 as we don't count time
+    label = labels2compare{i};
+    idx_result = find(strcmp(labelsResults, label));
+
+    coordReference = dataReference.data(:,i);
+    coordResult = dataResults.data(:,idx_result);
+
+    p = mod(i-1, a*b); % plot index 
+    if p == 0
+        p = a*b;
+    elseif p == 1
+        figure;
+    end
+    parts = split(label, '/');
+    coordName = parts{end-1};
+
+    if endsWith(coordName, '_tx') || endsWith(coordName, '_ty') ...
+            || endsWith(coordName, '_tz')
+        factor_rad = 1;  
+    else 
+        factor_rad = 180/pi; % Convert radians to degrees for plotting
+    end
+    subplot(a,b, p); plot(time_ref, coordReference*factor_rad); hold on;
+    plot(time_rslt, coordResult*factor_rad);
+
+
+    title(coordName, 'Interpreter','none');
+    xlabel('Time (s)');
+    xlim([time_rslt(1), time_rslt(end)])
+    if factor_rad == 1
+        ylabel('meters(m)');
+    else
+        ylabel('Degrees (°)')
+    end
+    if p == a*b 
+        legend('Reference', 'Result');
+    end
+    
+    hold off;
+
+
+end
+
+
+
+
+
+
+
