@@ -159,7 +159,7 @@ problem.addGoal(contactTracking);
 problem.setStateInfo('/jointset/ground_pelvis/pelvis_tilt/value', [-10*pi/180, 10*pi/180]);
 problem.setStateInfo('/jointset/ground_pelvis/pelvis_list/value', [-10*pi/180, 10*pi/180]);
 problem.setStateInfo('/jointset/ground_pelvis/pelvis_rotation/value', [-10*pi/180, 10*pi/180]);
-problem.setStateInfo('/jointset/ground_pelvis/pelvis_tx/value', [0, 2]); % different than treadmill as the surface does not move
+problem.setStateInfo('/jointset/ground_pelvis/pelvis_tx/value', [0, 2]); 
 problem.setStateInfo('/jointset/ground_pelvis/pelvis_ty/value', [0.75, 1.25]);
 problem.setStateInfo('/jointset/ground_pelvis/pelvis_tz/value', [-0.5, 0.25]);
 problem.setStateInfo('/jointset/hip_l/hip_flexion_l/value', [-40*pi/180, 50*pi/180]);
@@ -187,11 +187,11 @@ problem.setStateInfo('/jointset/ankle_r/ankle_angle_r/value', [-30*pi/180, 50*pi
 %problem.addGoal(speedGoal);
 
 % Prevent body penetration
-distanceConstraint = MocoFrameDistanceConstraint();
-distanceConstraint.setName('distance_constraint');
-distanceConstraint.addFramePair(MocoFrameDistanceConstraintPair('/bodyset/calcn_l','/bodyset/foot_r',0.02,100));
-distanceConstraint.addFramePair(MocoFrameDistanceConstraintPair('/bodyset/toes_l', '/bodyset/foot_r', 0.02,100));
-problem.addPathConstraint(distanceConstraint);
+% distanceConstraint = MocoFrameDistanceConstraint();
+% distanceConstraint.setName('distance_constraint');
+% distanceConstraint.addFramePair(MocoFrameDistanceConstraintPair('/bodyset/calcn_l','/bodyset/foot_r',0.02,100));
+% distanceConstraint.addFramePair(MocoFrameDistanceConstraintPair('/bodyset/toes_l', '/bodyset/foot_r', 0.02,100));
+% problem.addPathConstraint(distanceConstraint);
 
 
 % Initial guess, comment if there is not guess

@@ -3,7 +3,7 @@ function DataPath = getDataPath()
 
 if ispc
     % Windows: edit this path to where the dataset is stored locally
-    DataPath = 'C:\Users\brive\OneDrive - Queen''s University\Research projects\Dataset imperial\Dataset';
+    DataPath = 'C:\Users\brive\OneDrive - Queen''s University\Research projects\MocoTracking';
 
 elseif ismac
     % macOS: edit this path to where the dataset is stored locally
