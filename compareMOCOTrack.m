@@ -5,8 +5,22 @@ addpath(fullfile('Functions','Motion'));
 cd(getDataPath());
 
 %% 
-ReferenceDir = fullfile('Data', 'ik_output_walk_rad.sto');
-ResultsDir = fullfile('Results', 'MTracking_Amp_STF_1_solution.sto');
+Data2Compare = 'IK'; % it can be GRF or IK 
+if strcmp(Data2Compare, 'GRF')
+    namesolution = 'MTracking_Amp_STF_1_GRF.sto';
+    nameReference = 'grf_walk.mot';
+    a = 3; 
+    b = 4; 
+elseif strcmp(Data2Compare, 'IK')
+    namesolution = 'MTracking_Amp_STF_1_solution.sto';
+    nameReference = 'ik_output_walk_rad.sto';
+    a = 3; 
+    b = 3; 
+end
+
+
+ReferenceDir = fullfile('Data', nameReference);
+ResultsDir = fullfile('Results', namesolution);
 
 
 dataReference = read_motionFile(ReferenceDir);
@@ -20,8 +34,7 @@ time_rslt = dataResults.data(:,1);
 
 total2plot = numel(labels2compare) - 1;
 
-a = 3; 
-b = 4; 
+
 
 
 for i = 2:numel(labels2compare) % We start from 2 as we don't count time
@@ -37,11 +50,16 @@ for i = 2:numel(labels2compare) % We start from 2 as we don't count time
     elseif p == 1
         figure;
     end
-    parts = split(label, '/');
-    coordName = parts{end-1};
+    if strcmp(Data2Compare, 'IK')
+        parts = split(label, '/');
+        coordName = parts{end-1};
+    else
+        coordName = label; % Assign label to coordName for GRF case
+    end
+    
 
     if endsWith(coordName, '_tx') || endsWith(coordName, '_ty') ...
-            || endsWith(coordName, '_tz')
+            || endsWith(coordName, '_tz') || strcmp(Data2Compare, 'GRF')
         factor_rad = 1;  
     else 
         factor_rad = 180/pi; % Convert radians to degrees for plotting
@@ -66,6 +84,8 @@ for i = 2:numel(labels2compare) % We start from 2 as we don't count time
 
 
 end
+
+cd(orgDir);
 
 
 
