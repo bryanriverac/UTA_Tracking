@@ -99,26 +99,26 @@ study = track.initialize();
 % problem by default.
 problem = study.updProblem();
 
-% % Define the periodicity goal
-% periodicityGoal = MocoPeriodicityGoal('symmetryGoal');
-% problem.addGoal(periodicityGoal);
+% Define the periodicity goal
+periodicityGoal = MocoPeriodicityGoal('symmetryGoal');
+problem.addGoal(periodicityGoal);
 % 
 model = modelProcessor.process();
 model.initSystem();
 % 
-% % All states are periodic except pelvis anterior-posterior translation
-% for i = 1:model.getNumStateVariables()
-%     currentStateName = string(model.getStateVariableNames().getitem(i-1));
-%     if (~contains(currentStateName,'pelvis_tx/value'))
-%        periodicityGoal.addStatePair(MocoPeriodicityGoalPair(currentStateName));
-%     end
-% end
+% All states are periodic except pelvis anterior-posterior translation
+for i = 1:model.getNumStateVariables()
+    currentStateName = string(model.getStateVariableNames().getitem(i-1));
+    if (~contains(currentStateName,'pelvis_tx/value'))
+       periodicityGoal.addStatePair(MocoPeriodicityGoalPair(currentStateName));
+    end
+end
 % 
-% % All controls are periodic
-% for i = 1:model.getNumControls()
-%     currentControlName = string(problem.createRep().createControlInfoNames().get(i-1));
-%     periodicityGoal.addControlPair(MocoPeriodicityGoalPair(currentControlName));
-% end
+% All controls are periodic
+for i = 1:model.getNumControls()
+    currentControlName = string(problem.createRep().createControlInfoNames().get(i-1));
+    periodicityGoal.addControlPair(MocoPeriodicityGoalPair(currentControlName));
+end
 
 effort = MocoControlGoal.safeDownCast(problem.updGoal('control_effort'));
 effort.setWeight(1);
@@ -202,7 +202,7 @@ solver = MocoCasADiSolver.safeDownCast(study.updSolver());
 %numRows = guess.getNumTimes();
 %StateNames = model.getStateVariableNames();
 %for i = 1:model.getNumStateVariables()
-%    currentStateName = string(StateNames.getitem(i-1));
+%    currentStateName = string(StateNames.getitem(i-1));  
 %    if contains(currentStateName,'normalized_tendon_force')
 %        MusName = currentStateName;
 %        guess.setState(currentStateName, linspace(0.2,0.2,numRows));

@@ -5,7 +5,7 @@ cd(getDataPath());
 
 
 %% 
-data_type = 'Activation'; 
+data_type = 'Force'; 
 namesolution = 'MTracking_Amp_STF_1_solution.sto';
 ResultsDir = fullfile('Results', namesolution);
 
@@ -68,3 +68,4 @@ for i = 2:numel(labelsResults)
     end
 end
 
+cd(orgDir); 

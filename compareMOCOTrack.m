@@ -6,10 +6,10 @@ cd(getDataPath());
 mass = 73.49; 
 
 %% 
-Data2Compare = 'IK'; % it can be GRF or IK 
+Data2Compare = 'GRF'; % it can be GRF or IK 
 
 if strcmp(Data2Compare, 'GRF')
-    namesolution = 'MTracking_Amp_STF_1_GRFOptimal.sto';
+    namesolution = 'MTracking_Amp_STF_1_GRF.sto';
     nameReference = 'grf_walk.mot';
     a = 3; 
     b = 3; 
