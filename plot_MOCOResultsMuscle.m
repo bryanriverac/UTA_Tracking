@@ -18,7 +18,7 @@ a = 3;
 b = 4;
 
 if strcmp(data_type, 'Force')
-    Weight = 73.49*9.81; 
+    mass = 73.49; 
     import org.opensim.modeling.*;
     mdl = Model(fullfile('Model', 'GenericAmputee_r_tracking.osim'));
     mdl.initSystem()
@@ -42,7 +42,8 @@ for i = 2:numel(labelsResults)
                 plot_index = 1;
                 mus = mdl.getMuscles().get(muscleName);
                 ForceMuscle = mus.getMaxIsometricForce();
-                normFactor = ForceMuscle / Weight;
+                BW = mass * 9.81;
+                normFactor = ForceMuscle / BW;
             end
         end
     end
