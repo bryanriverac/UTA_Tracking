@@ -2,12 +2,12 @@ clc; clear; close all;
 orgDir  = pwd; 
 
 import org.opensim.modeling.*;
-
+cd(getDataPath());
 % Use this as reference 
 track = MocoTrack();
 track.setName('muscle_driven_state_tracking');
 
-cd(getDataPath());
+
 % Construct a ModelProcessor and set it on the tool. The default
 % muscles in the model are replaced with optimization-friendly
 % DeGrooteFregly2016Muscles, and adjustments are made to the default muscle
@@ -35,8 +35,8 @@ track.setStatesReference(tableStatesProcessor);
 % the derivative of splined position data.
 track.set_track_reference_position_derivatives(true);
 % Initial time, final time, and mesh interval.
-track.set_initial_time(0.82); % for amputee 0.75- 
-track.set_final_time(1.99);
+track.set_initial_time(0.81); % for amputee 0.75- 
+track.set_final_time(1.97);
 %track.set_mesh_interval(0.05);
 
 
@@ -99,13 +99,13 @@ study = track.initialize();
 % problem by default.
 problem = study.updProblem();
 
-% Define the periodicity goal
-%periodicityGoal = MocoPeriodicityGoal('symmetryGoal');
-%problem.addGoal(periodicityGoal);
-
+% % Define the periodicity goal
+% periodicityGoal = MocoPeriodicityGoal('symmetryGoal');
+% problem.addGoal(periodicityGoal);
+% 
 model = modelProcessor.process();
 model.initSystem();
-
+% 
 % % All states are periodic except pelvis anterior-posterior translation
 % for i = 1:model.getNumStateVariables()
 %     currentStateName = string(model.getStateVariableNames().getitem(i-1));
@@ -126,7 +126,7 @@ effort.setExponent(2);
 effort.setDivideByDisplacement(false);
 
 % GRF tracking
-contactTracking = MocoContactTrackingGoal('contact', 1);
+contactTracking = MocoContactTrackingGoal('contact', 0.01);
 contactTracking.setExternalLoadsFile('Data/grf_walk.xml');
 
 forceNamesRightFoot = StdVectorString();
@@ -159,7 +159,7 @@ problem.addGoal(contactTracking);
 problem.setStateInfo('/jointset/ground_pelvis/pelvis_tilt/value', [-10*pi/180, 10*pi/180]);
 problem.setStateInfo('/jointset/ground_pelvis/pelvis_list/value', [-10*pi/180, 10*pi/180]);
 problem.setStateInfo('/jointset/ground_pelvis/pelvis_rotation/value', [-10*pi/180, 10*pi/180]);
-problem.setStateInfo('/jointset/ground_pelvis/pelvis_tx/value', [0, 2]); 
+problem.setStateInfo('/jointset/ground_pelvis/pelvis_tx/value', [0, 2.5]); 
 problem.setStateInfo('/jointset/ground_pelvis/pelvis_ty/value', [0.75, 1.25]);
 problem.setStateInfo('/jointset/ground_pelvis/pelvis_tz/value', [-0.5, 0.25]);
 problem.setStateInfo('/jointset/hip_l/hip_flexion_l/value', [-40*pi/180, 50*pi/180]);
@@ -212,11 +212,11 @@ solver = MocoCasADiSolver.safeDownCast(study.updSolver());
 % Uncomment this line if not loading an initial guess
 %solver.setGuess(guess);
 
-%solver.setGuessFile('Data/MTracking_Amp_1_guess.sto')
+%solver.setGuessFile('Results/MInverse_Amp_STF_1_solution.sto') % using a MOCO inverse solution as initial guess
 solver.set_optim_max_iterations(2000);
 solver.set_num_mesh_intervals(50);
 solver.set_optim_constraint_tolerance(1e-4);
-solver.set_optim_convergence_tolerance(1e-3);
+solver.set_optim_convergence_tolerance(1e+01);
 solver.set_minimize_implicit_auxiliary_derivatives(true)
 solver.set_implicit_auxiliary_derivatives_weight(0.00001)
 solver.set_enforce_constraint_derivatives(true)
@@ -225,10 +225,11 @@ solver.resetProblem(problem);
 
 % Solve and visualize.
 solution = study.solve();%.unseal();
-solution = solution.unseal();
-%import org.opensim.modeling.*;
+
 solution.write(fullfile('Results','MTracking_Amp_STF_1_solution.sto'));
 
+import org.opensim.modeling.*;
+solution = solution.unseal();
 contact_r = StdVectorString();
 contact_l = StdVectorString();
 contact_r.add('/forceset/contactHeel_r');
