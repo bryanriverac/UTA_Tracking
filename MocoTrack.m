@@ -127,7 +127,7 @@ effort.setDivideByDisplacement(false);
 
 % GRF tracking
 contactTracking = MocoContactTrackingGoal('contact', 0.01);
-contactTracking.setExternalLoadsFile('Data/grf_walk.xml');
+contactTracking.setExternalLoadsFile(fullfile('Data', 'grf_walk.xml'));
 
 forceNamesRightFoot = StdVectorString();
 forceNamesRightFoot.add('/forceset/contactHeel_r');
@@ -212,7 +212,7 @@ solver = MocoCasADiSolver.safeDownCast(study.updSolver());
 % Uncomment this line if not loading an initial guess
 %solver.setGuess(guess);
 
-%solver.setGuessFile('Results/MInverse_Amp_STF_1_solution.sto') % using a MOCO inverse solution as initial guess
+solver.setGuessFile(fullfile('Results', 'MTracking_Amp_STF_1_InitialGuess.sto')) % using a MOCO inverse solution as initial guess
 solver.set_optim_max_iterations(2000);
 solver.set_num_mesh_intervals(50);
 solver.set_optim_constraint_tolerance(1e-4);
@@ -228,7 +228,6 @@ solution = study.solve();%.unseal();
 
 solution.write(fullfile('Results','MTracking_Amp_STF_1_solution.sto'));
 
-import org.opensim.modeling.*;
 solution = solution.unseal();
 contact_r = StdVectorString();
 contact_l = StdVectorString();
