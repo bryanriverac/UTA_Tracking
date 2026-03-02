@@ -10,18 +10,16 @@ if strcmp(Data2Compare, 'GRF')
     namesolution = 'MTracking_Amp_STF_1_GRF.sto';
     nameReference = 'grf_walk.mot';
     a = 3; 
-    b = 4; 
+    b = 3; 
 elseif strcmp(Data2Compare, 'IK')
     namesolution = 'MTracking_Amp_STF_1_solution.sto';
     nameReference = 'ik_output_walk_rad.sto';
     a = 3; 
-    b = 3; 
+    b = 4; 
 end
-
 
 ReferenceDir = fullfile('Data', nameReference);
 ResultsDir = fullfile('Results', namesolution);
-
 
 dataReference = read_motionFile(ReferenceDir);
 dataResults = importdata(ResultsDir); % read_motionFile does not work with MocoTrack results 
@@ -31,11 +29,6 @@ labels2compare = dataReference.labels;
 labelsResults = dataResults.colheaders;
 time_ref = dataReference.data(:,1);
 time_rslt = dataResults.data(:,1);
-
-total2plot = numel(labels2compare) - 1;
-
-
-
 
 for i = 2:numel(labels2compare) % We start from 2 as we don't count time
     label = labels2compare{i};
@@ -59,7 +52,7 @@ for i = 2:numel(labels2compare) % We start from 2 as we don't count time
     
 
     if endsWith(coordName, '_tx') || endsWith(coordName, '_ty') ...
-            || endsWith(coordName, '_tz') || strcmp(Data2Compare, 'GRF')
+            || endsWith(coordName, '_tz') || ~strcmp(Data2Compare, 'IK')
         factor_rad = 1;  
     else 
         factor_rad = 180/pi; % Convert radians to degrees for plotting
@@ -71,10 +64,22 @@ for i = 2:numel(labels2compare) % We start from 2 as we don't count time
     title(coordName, 'Interpreter','none');
     xlabel('Time (s)');
     xlim([time_rslt(1), time_rslt(end)])
+    if strcmp(Data2Compare, 'IK')
     if factor_rad == 1
         ylabel('meters(m)');
     else
         ylabel('Degrees (°)')
+    end
+    elseif strcmp(Data2Compare, 'GRF')
+        if contains(coordName, 'force')
+            if strcmp(coordName(end-2:end-1), '_v')
+                ylabel('Force (N)')
+            elseif strcmp(coordName(end-2:end-1), '_p')
+                ylabel('Distance (m)')
+            end
+        elseif contains(coordName, 'torque')
+            ylabel('Moment (N-m)')
+        end
     end
     if p == a*b 
         legend('Reference', 'Result');
